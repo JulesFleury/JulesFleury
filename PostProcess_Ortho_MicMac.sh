@@ -1,11 +1,11 @@
 #!/bin/bash
 
+#	Script : PostProcess_MicMac.sh
 #
-#
-#	Workflow to postprocess MICMAC Orthophoto dataset
+#	Workflow to postprocess MICMAC dataset
 #
 # 	Jules Fleury, SIGEO/CEREGE
-#	10/2018
+#	08/2018
 
 
 # Starting message
@@ -51,6 +51,11 @@ then
 	exit 1
 fi
 
+#init variables
+shp="./Decoup-FCG.shp" #Shapefile for clipping 
+outdir="OUTPUT1" #Output directory
+prefim="Orthophotomosaic_Tile" #prefix for image name
+prefout="Orthophotomosaic_OTB_Fusion" #prefix for output name
 
 #Post Processing ######################################
 echo "  
@@ -79,53 +84,52 @@ echo "last row index $r_index; number of rows $rn"
 echo "last col index $c_index; number of cols $cn"
 
 #otb_TileFusion 
-mkdir OUTPUT
-prefim="Orthophotomosaic_Tile" #prefix for image name
-prefout="Orthophotomosaic_OTB_Fusion" #prefix for output name
+mkdir $outdir
+
 ci=0
 ri=0
 if (( "$cn" == 1 )) && (( "$rn" == 2 ))
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif -cols $cn -rows $rn -out OUTPUT/${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif -cols $cn -rows $rn -out $outdir/${prefout}.tif uint16
 elif (( "$cn" == 1 )) && (( "$rn" == 3 ))
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_${ci}_$(($ri+2)).tif -cols $cn -rows $rn -out OUTPUT/${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_${ci}_$(($ri+2)).tif -cols $cn -rows $rn -out $outdir/${prefout}.tif uint16
 elif (( "$cn" == 2 )) && (( "$rn" == 1 ))
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif -cols $cn -rows $rn -out OUTPUT/${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif -cols $cn -rows $rn -out $outdir/${prefout}.tif uint16
 elif (( "$cn" == 3 )) && (( "$rn" == 1 ))
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_$(($ci+2))_${ri}.tif -cols $cn -rows $rn -out OUTPUT/${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_$(($ci+2))_${ri}.tif -cols $cn -rows $rn -out $outdir/${prefout}.tif uint16
 elif [ "$cn" == 2 ] && [ "$rn" == 2 ]
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif -cols $cn -rows $rn -out OUTPUT/${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif -cols $cn -rows $rn -out $outdir/${prefout}.tif uint16
 elif [ "$cn" == 2 ] && [ "$rn" == 3 ]
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif ${prefim}_${ci}_$(($ri+2)).tif ${prefim}_$(($ci+1))_$(($ri+2)).tif -cols $cn -rows $rn -out OUTPUT/${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif ${prefim}_${ci}_$(($ri+2)).tif ${prefim}_$(($ci+1))_$(($ri+2)).tif -cols $cn -rows $rn -out $outdir/${prefout}.tif uint16
 elif [ "$cn" == 3 ] && [ "$rn" == 2 ]
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_$(($ci+2))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif ${prefim}_$(($ci+2))_$(($ri+1)).tif -cols $cn -rows $rn -out OUTPUT/${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_$(($ci+2))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif ${prefim}_$(($ci+2))_$(($ri+1)).tif -cols $cn -rows $rn -out $outdir/${prefout}.tif uint16
 elif [ "$cn" == 3 ] && [ "$rn" == 3 ]
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_$(($ci+2))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif ${prefim}_$(($ci+2))_$(($ri+1)).tif ${prefim}_${ci}_$(($ri+2)).tif ${prefim}_$(($ci+1))_$(($ri+2)).tif ${prefim}_$(($ci+2))_$(($ri+2)).tif -cols $cn -rows $rn -out OUTPUT/${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_$(($ci+2))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif ${prefim}_$(($ci+2))_$(($ri+1)).tif ${prefim}_${ci}_$(($ri+2)).tif ${prefim}_$(($ci+1))_$(($ri+2)).tif ${prefim}_$(($ci+2))_$(($ri+2)).tif -cols $cn -rows $rn -out $outdir/${prefout}.tif uint16
 else
 	echo "Two many tiles for this script, make this tilefusion manually"
 	exit 1
 fi
 
 #copy tfw
-cp Orthophotomosaic.tfw OUTPUT/Orthophotomosaic_OTB_Fusion.tfw
+cp Orthophotomosaic.tfw $outdir/Orthophotomosaic_OTB_Fusion.tfw
 
-cd OUTPUT
+
 #gdal_warp without cutline
 #gdalwarp -s_srs EPSG:$EPSG -srcnodata 0 Orthophotomosaic_OTB_Fusion.tif Orthophotomosaic_OTB_Fusion_Clip.tif -co COMPRESS=DEFLATE -co BIGTIFF=YES -co TILED=YES
 #gdal_warp with cutline
-gdalwarp -s_srs EPSG:$EPSG -srcnodata 0 -cutline Decoup_TPP_163_Ortho.shp Orthophotomosaic_OTB_Fusion.tif Orthophotomosaic_OTB_Fusion_Clip.tif -co COMPRESS=DEFLATE -co BIGTIFF=YES -co TILED=YES
+gdalwarp -s_srs EPSG:$EPSG -srcnodata 0 -cutline $shp $outdir/Orthophotomosaic_OTB_Fusion.tif $outdir/Orthophotomosaic_OTB_Fusion_Clip.tif -co COMPRESS=DEFLATE -co BIGTIFF=YES -co TILED=YES
 
 #rm first tiled file
-if [ -f "Orthophotomosaic_OTB_Fusion_Clip.tif" ]
+if [ -f "$outdir/Orthophotomosaic_OTB_Fusion_Clip.tif" ]
 then
-	rm Orthophotomosaic_OTB_Fusion.tif
+	rm $outdir/Orthophotomosaic_OTB_Fusion.*
 fi
 
 
@@ -133,7 +137,7 @@ fi
 echo "  
 	******************************************** 
 	***               Finished               ***
-	***     Results are in OUTPUT folder     ***
+	***     Results are in $outdir folder     ***
 	********************************************
 	"
 

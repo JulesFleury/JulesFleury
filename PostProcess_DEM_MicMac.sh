@@ -50,6 +50,12 @@ echo "
 	"
 read strdataset
 
+#init variables
+shp="./Decoup-FCG.shp" #Shapefile for clipping 
+#!!! be carefull to the location of the shapefile, it must be in the MEC-Malt folder
+outdir="OUTPUT" #Output directory
+strfinal=${strdataset}_$EPSG #string to hold the dataset identifier and the epsg code
+
 #Post Processing ######################################
 echo "  
 	******************************************** 
@@ -76,34 +82,43 @@ echo "AUTOMASK : lastautomask=$lastautomask; automstr=$automstr"
 #copy tfw
 cp $laststr.tfw $corrstr.tfw
 cp $laststr.tfw $automstr.tfw
-mkdir OUTPUT
+mkdir $outdir
 
 #export with gdal
-strfinal=${strdataset}_$EPSG #string to hold the dataset identifier and the epsg code
 echo "exporting CORR with GDAL to CORR_$strfinal.tif"
-gdal_translate -a_srs EPSG:$EPSG $lastcor OUTPUT/CORR_$strfinal.tif -co COMPRESS=DEFLATE
+gdal_translate -a_srs EPSG:$EPSG $lastcor $outdir/CORR_$strfinal.tif -co COMPRESS=DEFLATE
 echo "exporting AUTOMASK with GDAL to AUTOMASK_$strfinal.tif"
-gdal_translate -a_srs EPSG:$EPSG $lastautomask OUTPUT/AUTOMASK_$strfinal.tif -co COMPRESS=DEFLATE
+gdal_translate -a_srs EPSG:$EPSG $lastautomask $outdir/AUTOMASK_$strfinal.tif -co COMPRESS=DEFLATE
 echo "exporting DEM with GDAL to DEM_$strfinal.tif"
-gdal_translate -a_srs EPSG:$EPSG $lastDEM OUTPUT/DEM_$strfinal.tif -co COMPRESS=DEFLATE
+gdal_translate -a_srs EPSG:$EPSG $lastDEM $outdir/DEM_$strfinal.tif -co COMPRESS=DEFLATE
 
 
 # Set no correlation zones to NODATA using AUTOMASK
-cd OUTPUT
+cd $outdir
 echo "Filtering nodata values with the AUTOMASK, a second filtering with a polygon is sometimes necessary"
-gdal_calc.py -A DEM_$strfinal.tif -B AUTOMASK_$strfinal.tif --calc=A*B --NoDataValue=0 --outfile=DEM_$strfinal-cleaned.tif 
+gdal_calc.py -A DEM_$strfinal.tif -B AUTOMASK_$strfinal.tif --calc=A*B --NoDataValue=0 --outfile=DEM_$strfinal-cleaned.tif
 echo "Compressing final DEM"
-gdal_translate DEM_$strfinal-cleaned.tif DEM_$strfinal-clean.tif -co COMPRESS=DEFLATE -co TILED=YES -co BIGTIFF=YES
+gdal_translate DEM_$strfinal-cleaned.tif DEM_$strfinal-C.tif -co COMPRESS=DEFLATE -co TILED=YES -co BIGTIFF=YES
 rm DEM_$strfinal-cleaned.tif
+#Clipping with cutline
+echo "Clipping DEM with cutline from Shapefile"
+gdalwarp -s_srs EPSG:$EPSG -cutline ../$shp DEM_$strfinal-C.tif DEM_$strfinal-C_D.tif -co COMPRESS=DEFLATE -co BIGTIFF=YES -co TILED=YES
+
+#Smoothing with OTB gaussian
+echo "Smoothing DEM"
+otbcli_Smoothing -in DEM_$strfinal-C_D.tif -type gaussian -type.gaussian.radius 2 -progress 1 -out DEM_gauss.tif
+gdal_translate DEM_gauss.tif DEM_$strfinal-C_D_F.tif -co COMPRESS=DEFLATE -co TILED=YES -co BIGTIFF=YES
+rm DEM_gaus.tif
 
 #Hillshading
 echo "Hillshading DEM"
 gdaldem hillshade DEM_$strfinal-clean.tif SHD_DEM_$strfinal-clean.tif -co COMPRESS=DEFLATE
+gdaldem hillshade DEM_$strfinal-C_D_SGauss2.tif SHD_DEM_$strfinal-C_D_SGauss2.tif -co COMPRESS=DEFLATE
 
 echo "  
 	******************************************** 
 	***               Finished               ***
-	***     Results are in OUTPUT folder     ***
+	***     Results are in $outdir folder     ***
 	********************************************
 	"
 

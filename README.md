@@ -1,4 +1,6 @@
 # JulesFleury
-Des scripts perso pour tous usages
 
-mon premier commit
+Scripts et workflows pour MicMac
+en python et en bash
+
+
