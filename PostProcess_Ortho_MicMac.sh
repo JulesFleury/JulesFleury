@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#	Script : PostProcess_MicMac.sh
 #
-#	Workflow to postprocess MICMAC dataset
+#
+#	Workflow to postprocess MICMAC Orthophoto dataset
 #
 # 	Jules Fleury, SIGEO/CEREGE
-#	08/2018
+#	10/2018
 
 
 # Starting message
