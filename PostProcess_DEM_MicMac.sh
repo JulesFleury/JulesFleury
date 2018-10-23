@@ -113,7 +113,7 @@ rm DEM_gaus.tif
 #Hillshading
 echo "Hillshading DEM"
 gdaldem hillshade DEM_$strfinal-clean.tif SHD_DEM_$strfinal-clean.tif -co COMPRESS=DEFLATE
-gdaldem hillshade DEM_$strfinal-C_D_SGauss2.tif SHD_DEM_$strfinal-C_D_SGauss2.tif -co COMPRESS=DEFLATE
+gdaldem hillshade DEM_$strfinal-C_D_F.tif SHD_DEM_$strfinal-C_D_F.tif -co COMPRESS=DEFLATE
 
 echo "  
 	******************************************** 
