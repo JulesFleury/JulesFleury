@@ -108,7 +108,7 @@ gdalwarp -s_srs EPSG:$EPSG -cutline ../$shp DEM_$strfinal-C.tif DEM_$strfinal-C_
 echo "Smoothing DEM"
 otbcli_Smoothing -in DEM_$strfinal-C_D.tif -type gaussian -type.gaussian.radius 2 -progress 1 -out DEM_gauss.tif
 gdal_translate DEM_gauss.tif DEM_$strfinal-C_D_F.tif -co COMPRESS=DEFLATE -co TILED=YES -co BIGTIFF=YES
-rm DEM_gaus.tif
+rm DEM_gauss.tif
 
 #Hillshading
 echo "Hillshading DEM"
