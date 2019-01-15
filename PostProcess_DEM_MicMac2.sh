@@ -86,34 +86,40 @@ mkdir $outdir
 
 #export with gdal
 echo "exporting CORR with GDAL to CORR_$strfinal.tif"
-gdal_translate -a_srs EPSG:$EPSG $lastcor $outdir/CORR_$strfinal.tif -co COMPRESS=DEFLATE
+gdal_translate -a_srs EPSG:$EPSG $lastcor $outdir/CORR_$strfinal.tif -co COMPRESS=DEFLATE -co TILED=YES -co BIGTIFF=YES
 echo "exporting AUTOMASK with GDAL to AUTOMASK_$strfinal.tif"
-gdal_translate -a_srs EPSG:$EPSG $lastautomask $outdir/AUTOMASK_$strfinal.tif -co COMPRESS=DEFLATE
+gdal_translate -a_srs EPSG:$EPSG $lastautomask $outdir/AUTOMASK_$strfinal.tif -co COMPRESS=DEFLATE -co TILED=YES -co BIGTIFF=YES
 echo "exporting DEM with GDAL to DEM_$strfinal.tif"
-gdal_translate -a_srs EPSG:$EPSG $lastDEM $outdir/DEM_$strfinal.tif -co COMPRESS=DEFLATE
+gdal_translate -a_srs EPSG:$EPSG $lastDEM $outdir/DEM_$strfinal.tif -co COMPRESS=DEFLATE -co TILED=YES -co BIGTIFF=YES
 
 
 # Set no correlation zones to NODATA using AUTOMASK
 cd $outdir
 echo "Filtering nodata values with the AUTOMASK, a second filtering with a polygon is sometimes necessary"
-gdal_calc.py -A DEM_$strfinal.tif -B AUTOMASK_$strfinal.tif --calc=A*B --NoDataValue=0 --outfile=DEM_$strfinal-cleaned.tif
+#first set 0 value in Automask to nodata
+gdal_translate -a_nodata 0 AUTOMASK_$strfinal.tif AUTOMASK_$strfinal-nodata.tif
+#then set nodata values in automask to nodata values in dem
+gdal_calc.py -A DEM_$strfinal.tif -B AUTOMASK_$strfinal-nodata.tif --calc=A*B --outfile=DEM_$strfinal-cleaned.tif
 echo "Compressing final DEM"
 gdal_translate DEM_$strfinal-cleaned.tif DEM_$strfinal-C.tif -co COMPRESS=DEFLATE -co TILED=YES -co BIGTIFF=YES
 rm DEM_$strfinal-cleaned.tif
-#Clipping with cutline
-echo "Clipping DEM with cutline from Shapefile"
-gdalwarp -s_srs EPSG:$EPSG -cutline ../$shp DEM_$strfinal-C.tif DEM_$strfinal-C_D.tif -co COMPRESS=DEFLATE -co BIGTIFF=YES -co TILED=YES
+#Clipping with cutline 
+#echo "Clipping DEM with cutline from Shapefile"
+#gdalwarp -s_srs EPSG:$EPSG -cutline ../$shp DEM_$strfinal-C.tif DEM_$strfinal-C_D.tif -co COMPRESS=DEFLATE -co BIGTIFF=YES -co TILED=YES
 
 #Smoothing with OTB gaussian
-echo "Smoothing DEM"
-otbcli_Smoothing -in DEM_$strfinal-C_D.tif -type gaussian -type.gaussian.radius 2 -progress 1 -out DEM_gauss.tif
-gdal_translate DEM_gauss.tif DEM_$strfinal-C_D_F.tif -co COMPRESS=DEFLATE -co TILED=YES -co BIGTIFF=YES
-rm DEM_gauss.tif
+#!!!!!!!!! There is a problem of border effect as nodata values are taken into account!!!!!!!!!!
+#!!!!!!!!! prefer not to use this way of filtering => a better way is to use MDENOISE
+#echo "Smoothing DEM"
+#otbcli_Smoothing -in DEM_$strfinal-C.tif -type gaussian -type.gaussian.radius 2 -progress 1 -out DEM_gauss.tif
+#gdal_translate DEM_gauss.tif DEM_gauss2.tif -co COMPRESS=DEFLATE -co TILED=YES -co BIGTIFF=YES
+#gdal_calc.py -A DEM_gauss2.tif -B AUTOMASK_$strfinal-nodata.tif --calc=A*B --outfile=DEM_$strfinal-C_F.tif
+#rm DEM_gauss*.tif 
 
 #Hillshading
 echo "Hillshading DEM"
 gdaldem hillshade DEM_$strfinal-C.tif SHD_DEM_$strfinal-C.tif -co COMPRESS=DEFLATE
-gdaldem hillshade DEM_$strfinal-C_D_F.tif SHD_DEM_$strfinal-C_D_F.tif -co COMPRESS=DEFLATE
+#gdaldem hillshade DEM_$strfinal-C_F.tif SHD_DEM_$strfinal-C_F.tif -co COMPRESS=DEFLATE
 
 echo "  
 	******************************************** 
@@ -123,7 +129,5 @@ echo "
 	"
 
 # One should then filter the resulting DEM using either Despeckle or Gaussian filters
-
-# For Orthophoto, automatic processing is not done as usually a tile merging must be done before
 
 
