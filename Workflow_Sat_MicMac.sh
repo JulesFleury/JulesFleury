@@ -194,70 +194,19 @@ if [ "$orthob"=true ]; then
         mm3d Tawny Ortho-MEC-Malt
 fi
 
+echo "
+	********************************************
+	***               Finished  MicMac       ***
+	***     				 ***
+	********************************************
+	"
 #Post Processing ######################################
 echo "
 	********************************************
-	***        Post-processing               ***
+	***        For Post-processing           ***
+	*** Use other scripts PostProcessXXX.sh  ***
 	********************************************
 	"
 
-mkdir OUTPUT
-cd MEC-Malt
-#get the last file names
-finalDEMs=($(ls Z_Num*_DeZoom*_STD-MALT.tif))
-finalcors=($(ls Correl_STD-MALT_Num*.tif))
-finalautomask=($(ls AutoMask_STD-MALT_Num*.tif))
-DEMind=$((${#finalDEMs[@]}-1))
-corind=$((${#finalcors[@]}-1))
-autoind=$((${#finalautomas[@]}-1))
-lastDEM=${finalDEMs[DEMind]}
-lastcor=${finalcors[corind]}
-lastautomask=${finalautomask[autoind]}
-laststr="${lastDEM%.*}"
-corrstr="${lastcor%.*}"
-automstr="${lastautomask%.*}"
-echo "DEM : lastDEM=$lastDEM; laststr=$laststr"
-echo "CORRELATION : lastcor=$lastcor; corrstr=$corrstr"
-echo "AUTOMASK : lastautomask=$lastautomask; automstr=$automstr"
-#copy tfw
-cp $laststr.tfw $corrstr.tfw
-cp $laststr.tfw $automstr.tfw
-cd ..
 
-#export DEM, CORR and AUTOMASK with gdal
-gdal_translate -a_srs EPSG:$EPSG MEC-Malt/$lastDEM OUTPUT/DEM_MICMAC_$EPSG.tif -co COMPRESS=DEFLATE
-gdal_translate -a_srs EPSG:$EPSG MEC-Malt/$lastcor OUTPUT/CORR_MICMAC_$EPSG.tif -co COMPRESS=DEFLATE
-gdal_translate -a_srs EPSG:$EPSG MEC-Malt/$lastautomask OUTPUT/AUTOMASK_MICMAC_$EPSG.tif -co COMPRESS=DEFLATE
 
-# export Ortho
-if [ "$orthob"=true ]; then
-	if [ -f "./Ortho-MEC-Malt/Orthophotomosaic_Tile_0_0.tif" ]
-	then
-		echo "
-		Cannot export Orthomosaic as tiles must be merged first
-		Use for example otbcli_TileFusion
-		"
-	else
-		gdal_translate -a_nodata 0 -a_srs EPSG:$EPSG Ortho-MEC-Malt/Orthophotomosaic.tif OUTPUT/ORTHOMOSAIC_MICMAC_$EPSG.tif -co COMPRESS=DEFLATE
-	fi
-fi
-
-# Set no correlation zones to NODATA using AUTOMASK
-cd OUTPUT
-gdal_calc.py -A DEM_MICMAC_$EPSG.tif -B AUTOMASK_MICMAC_$EPSG.tif --calc=A*B --NoDataValue=0 --outfile=DEM_MICMAC_$EPSG-cleaned.tif
-gdal_translate DEM_MICMAC_$EPSG-cleaned.tif DEM_MICMAC_$EPSG-clean.tif -co COMPRESS=DEFLATE
-rm DEM_MICMAC_$EPSG-cleaned.tif
-
-#Hillshading
-#gdaldem hillshade DEM_MICMAC_$EPSG-clean.tif SHD_DEM_MICMAC_$EPSG-clean.tif -co COMPRESS=DEFLATE
-
-echo "
-	********************************************
-	***               Finished               ***
-	***     Results are in OUTPUT folder     ***
-	********************************************
-	"
-
-# One should then filter the resulting DEM using either Despeckle or Gaussian filters
-
-# For Orthophoto, automatic processing is not done as usually a tile merging must be done before
