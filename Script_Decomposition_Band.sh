@@ -1,6 +1,7 @@
 #!/bin/bash
 #Programme pour décomposer (dupliquer) les orientations MicMac faites 
 #sur des données Panchro vers les canaux individuels d'une donnée de Pan-Sharpen
+#Attention certaines étapes ne sont pas implémentées par le script (indiquées en commentaires) et doivent être lancées séparemment
 #Ce script doit être lancé depuis le répertoire Ori-.... issu de l'ajustement par Campari
 #nommage panchro ..._P_...
 #nommage pan-sharpen ..._PMS_...
@@ -10,8 +11,11 @@
 ZEDATE=`date +%Y-%m-%d_%H-%M-%S`
 echo "Début du traitement : $ZEDATE"
 
+#0
+#Pan-sharpen : avec votre outil favori, par ex. otbcli_BundletoPerfectSensor (parfait pour un bundle Pléiades)
+
 #1-
-#split Pan-sharpen bands
+#split Pan-sharpen bands (séparation des bandes d'une image MS vers des images individuelles)
 #ceci est réalisé avec otbcli_splitimage.....
 
 #2-
@@ -60,11 +64,12 @@ do
 done
 
 #4-
-#Lancer MicMac Malt de la facon suivante
-#mm3d Malt Ortho "Pattern de toutes les images" "dossier_orientations" DirMEC="dossier de la MEC des panchromatiques" InMNT="Pattern des panchromatiques" DoMEC=1 DoOrtho=1 ImOrtho="Pattern des BAND 1 des trois tri-stéréo" DirOF="dossier des orthophotos du BAND 1" EZA=1
-#ou alors si Malt a déjà tourné sur les panchro
-#mm3d Malt Ortho "Pattern de toutes les images" "dossier_orientations" DoMEC=0 DoOrtho=1 ImOrtho="Pattern des BAND 1 des trois tri-stéréo" DirOF="dossier des orthophotos du BAND 1"
-#exemple : mm3d Malt Ortho "IMG.*.TIF" Ori-RPC-d0-adj DirMEC="MEC-Malt-Zf4" DoMEC=1 ImMNT="IMG.*(00[123]).TIF" ImOrtho="IMG.*_b.*.TIF" DirOF="Ortho_Fusion" DoOrtho=1 ZoomF=4 EZA=1
+#Lancer MicMac Malt de la facon suivante si Malt n'a pas déjà tourné
+#mm3d Malt Ortho "Pattern de toutes les images" "dossier_orientations" DirMEC="dossier M#exemple : mm3d Malt Ortho "IMG.*.TIF" Ori-RPC-d0-adj DirMEC="MEC-Malt-Zf4" DoMEC=1 ImMNT="IMG.*(00[123]).TIF" ImOrtho="IMG.*_b.*.TIF" DirOF="Ortho_Fusion" DoOrtho=1 ZoomF=4 EZA=1EC des panchromatiques" ImMNT="Pattern des panchromatiques" DoMEC=1 DoOrtho=1 ImOrtho="Pattern des MS Pan-sharpen" DirOF="dossier des orthophotos" EZA=1
+#exemple : mm3d Malt Ortho "IMG.*.TIF" Ori-RPC-d0-adj DirMEC="MEC-Malt_final" DoMEC=1 ImMNT="IMG.*(00[123]).TIF" ImOrtho="IMG.*_b.*.TIF" DirOF="Ortho_Fusion" DoOrtho=1 EZA=1
+#ou alors si Malt a déjà tourné sur les panchros
+#mm3d Malt Ortho "Pattern de toutes les images" "dossier_orientations" DoMEC=0 DoOrtho=1 ImOrtho="Pattern des MS Pan-sharpen" DirOF="dossier des orthophotos"
+
 
 
 #5- 
