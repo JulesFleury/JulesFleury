@@ -35,27 +35,6 @@ then
 	exit 1
 fi
 
-#input parameter EPSG
-echo "
-	Input spatial reference EPSG code :
- 	e.g.	4326 : WGS84 
-		2154 : RGF93-Lambert93
-		32632: WGS84-UTM32N
-
-	To exit : 0
-	"
-read EPSG
-
-if ! [[ "$EPSG" =~ ^[0-9]+$ ]] 
-then
-	echo "Sorry integers only" 
-	>&1 && exit 1
-elif [[ $EPSG -eq 0 ]] 
-then
-	echo "Check EPSG code and try again"
-	exit 1
-fi
-
 #Post Processing ######################################
 echo "  
 	******************************************** 
