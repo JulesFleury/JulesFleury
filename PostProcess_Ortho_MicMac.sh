@@ -53,7 +53,7 @@ fi
 
 #init variables
 shp="./Decoup-FCG.shp" #Shapefile for clipping 
-outdir="OUTPUT1" #Output directory
+outdir="OUTPUT" #Output directory
 prefim="Orthophotomosaic_Tile" #prefix for image name
 prefout="Orthophotomosaic_OTB_Fusion" #prefix for output name
 
@@ -122,7 +122,7 @@ cp Orthophotomosaic.tfw $outdir/Orthophotomosaic_OTB_Fusion.tfw
 
 
 #gdal_warp without cutline
-#gdalwarp -s_srs EPSG:$EPSG -srcnodata 0 Orthophotomosaic_OTB_Fusion.tif Orthophotomosaic_OTB_Fusion_Clip.tif -co COMPRESS=DEFLATE -co BIGTIFF=YES -co TILED=YES
+#gdalwarp -s_srs EPSG:$EPSG -srcnodata 0 $outdir/Orthophotomosaic_OTB_Fusion.tif $outdir/Orthophotomosaic_OTB_Fusion_Clip.tif -co COMPRESS=DEFLATE -co BIGTIFF=YES -co TILED=YES
 #gdal_warp with cutline
 gdalwarp -s_srs EPSG:$EPSG -srcnodata 0 -cutline $shp $outdir/Orthophotomosaic_OTB_Fusion.tif $outdir/Orthophotomosaic_OTB_Fusion_Clip.tif -co COMPRESS=DEFLATE -co BIGTIFF=YES -co TILED=YES
 
