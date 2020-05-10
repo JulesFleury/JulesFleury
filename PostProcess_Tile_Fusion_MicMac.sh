@@ -97,7 +97,7 @@ else
 fi
 
 #copy tfw
-cp ${preftile}.tfw ${prefout}_Fusion.tfw
+cp ${preftile}.tfw ${prefout}_OTB_Fusion.tfw
 
 
 echo "  
