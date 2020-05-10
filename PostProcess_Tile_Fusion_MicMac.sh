@@ -103,7 +103,7 @@ cp ${preftile}.tfw ${prefout}.tfw
 echo "  
 	******************************************** 
 	***               Finished               ***
-	***     Result is ${prefout}_Fusion     ***
+	***     Result is ${prefout}     ***
 	********************************************
 	"
 
