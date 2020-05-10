@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#	Script : PostProcess_MicMac.sh
+#	Script : 
 #
 #	Workflow to postprocess MICMAC dataset
 #
