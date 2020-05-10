@@ -23,7 +23,7 @@ echo "
 #init variables
 preftile="Z_Num9_DeZoom1_STD-MALT"
 prefim="${preftile}_Tile" #prefix for image name                                                                                                                                           
-prefout="${pretile}_OTB_Fusion" #prefix for output name
+prefout="${preftile}_OTB_Fusion" #prefix for output name
 
 #check tiles exist
 if  [ ! -f "${prefim}_0_0.tif" ]
