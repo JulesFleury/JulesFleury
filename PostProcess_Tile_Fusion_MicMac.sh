@@ -24,6 +24,7 @@ echo "
 preftile="Z_Num9_DeZoom1_STD-MALT"
 prefim="${preftile}_Tile" #prefix for image name                                                                                                                                           
 prefout="${preftile}_OTB_Fusion" #prefix for output name
+pixcoding="float" #coding of pixel for output file, use float for DEMs and uint16 for orthophoto
 
 #check tiles exist
 if  [ ! -f "${prefim}_0_0.tif" ]
@@ -69,28 +70,28 @@ ci=0
 ri=0
 if (( "$cn" == 1 )) && (( "$rn" == 2 ))
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif -cols $cn -rows $rn -out ${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif -cols $cn -rows $rn -out ${prefout}.tif $pixcoding
 elif (( "$cn" == 1 )) && (( "$rn" == 3 ))
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_${ci}_$(($ri+2)).tif -cols $cn -rows $rn -out ${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_${ci}_$(($ri+2)).tif -cols $cn -rows $rn -out ${prefout}.tif $pixcoding
 elif (( "$cn" == 2 )) && (( "$rn" == 1 ))
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif -cols $cn -rows $rn -out ${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif -cols $cn -rows $rn -out ${prefout}.tif $pixcoding
 elif (( "$cn" == 3 )) && (( "$rn" == 1 ))
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_$(($ci+2))_${ri}.tif -cols $cn -rows $rn -out ${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_$(($ci+2))_${ri}.tif -cols $cn -rows $rn -out ${prefout}.tif $pixcoding
 elif [ "$cn" == 2 ] && [ "$rn" == 2 ]
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif -cols $cn -rows $rn -out ${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif -cols $cn -rows $rn -out ${prefout}.tif $pixcoding
 elif [ "$cn" == 2 ] && [ "$rn" == 3 ]
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif ${prefim}_${ci}_$(($ri+2)).tif ${prefim}_$(($ci+1))_$(($ri+2)).tif -cols $cn -rows $rn -out ${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif ${prefim}_${ci}_$(($ri+2)).tif ${prefim}_$(($ci+1))_$(($ri+2)).tif -cols $cn -rows $rn -out ${prefout}.tif $pixcoding
 elif [ "$cn" == 3 ] && [ "$rn" == 2 ]
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_$(($ci+2))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif ${prefim}_$(($ci+2))_$(($ri+1)).tif -cols $cn -rows $rn -out ${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_$(($ci+2))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif ${prefim}_$(($ci+2))_$(($ri+1)).tif -cols $cn -rows $rn -out ${prefout}.tif $pixcoding
 elif [ "$cn" == 3 ] && [ "$rn" == 3 ]
 then
-	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_$(($ci+2))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif ${prefim}_$(($ci+2))_$(($ri+1)).tif ${prefim}_${ci}_$(($ri+2)).tif ${prefim}_$(($ci+1))_$(($ri+2)).tif ${prefim}_$(($ci+2))_$(($ri+2)).tif -cols $cn -rows $rn -out ${prefout}.tif uint16
+	otbcli_TileFusion -il ${prefim}_${ci}_${ri}.tif ${prefim}_$(($ci+1))_${ri}.tif ${prefim}_$(($ci+2))_${ri}.tif ${prefim}_${ci}_$(($ri+1)).tif ${prefim}_$(($ci+1))_$(($ri+1)).tif ${prefim}_$(($ci+2))_$(($ri+1)).tif ${prefim}_${ci}_$(($ri+2)).tif ${prefim}_$(($ci+1))_$(($ri+2)).tif ${prefim}_$(($ci+2))_$(($ri+2)).tif -cols $cn -rows $rn -out ${prefout}.tif $pixcoding
 else
 	echo "Two many tiles for this script, make this tilefusion manually"
 	exit 1
@@ -99,14 +100,20 @@ fi
 #copy tfw
 cp ${preftile}.tfw ${prefout}.tfw
 
+gdal_translate ${prefout}.tif ${prefout}_c.tif -co COMPRESS=DEFLATE -co TILED=YES -co BIGTIFF=YES
+cp ${prefout}.tfw ${prefout}_c.tfw
+
+#remove uncompressed file
+if [ -f "${prefout}_c.tif" ]
+then
+	rm ${prefout}.tif
+	rm ${prefout}.tfw
+fi
 
 echo "  
 	******************************************** 
 	***               Finished               ***
-	***     Result is ${prefout}     ***
+	***        check filenames for           ***
+	***          next processing             ***
 	********************************************
 	"
-
-
-
-
