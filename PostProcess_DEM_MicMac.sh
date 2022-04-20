@@ -110,16 +110,16 @@ rm DEM_$strfinal-cleaned.tif
 #Smoothing with OTB gaussian
 #!!!!!!!!! There is a problem of border effect as nodata values are taken into account!!!!!!!!!!
 #!!!!!!!!! prefer not to use this way of filtering => a better way is to use MDENOISE
-#echo "Smoothing DEM"
-#otbcli_Smoothing -in DEM_$strfinal-C.tif -type gaussian -type.gaussian.radius 2 -progress 1 -out DEM_gauss.tif
-#gdal_translate DEM_gauss.tif DEM_gauss2.tif -co COMPRESS=DEFLATE -co TILED=YES -co BIGTIFF=YES
-#gdal_calc.py -A DEM_gauss2.tif -B AUTOMASK_$strfinal-nodata.tif --calc=A*B --outfile=DEM_$strfinal-C_F.tif
+echo "Smoothing DEM"
+otbcli_Smoothing -in DEM_$strfinal-C.tif -type gaussian -type.gaussian.radius 2 -progress 1 -out DEM_gauss.tif
+gdal_calc.py -A DEM_gauss.tif -B AUTOMASK_$strfinal-nodata.tif --calc=A*B --outfile=DEM_gauss2.tif
+gdal_translate DEM_gauss2.tif DEM_$strfinal-C_F.tif -co COMPRESS=DEFLATE -co TILED=YES -co BIGTIFF=YES
 #rm DEM_gauss*.tif 
 
 #Hillshading
 echo "Hillshading DEM"
 gdaldem hillshade DEM_$strfinal-C.tif SHD_DEM_$strfinal-C.tif -co COMPRESS=DEFLATE
-#gdaldem hillshade DEM_$strfinal-C_F.tif SHD_DEM_$strfinal-C_F.tif -co COMPRESS=DEFLATE
+gdaldem hillshade DEM_$strfinal-C_F.tif SHD_DEM_$strfinal-C_F.tif -co COMPRESS=DEFLATE
 
 echo "  
 	******************************************** 
